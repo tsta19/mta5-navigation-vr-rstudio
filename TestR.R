@@ -2,7 +2,7 @@ library(rio)
 library(utils)
 
 #Loader en csv fil
-rio_csv = import("C:/Users/kspar/OneDrive/Dokumenter/GitHub/mta5-navigation-vr-rstudio/DataLogging/HopefullyLast.csv")
+rio_csv = import("C:/Users/kspar/OneDrive/Dokumenter/GitHub/mta5-navigation-vr-rstudio/DataLogging/HopefullyLast3.csv")
 head(rio_csv)
 View(rio_csv)
 
