@@ -4,7 +4,6 @@
 library(tidyverse)
 library(readbulk)
 library(magrittr)
-library(tidyr)
 
 options("digits.secs" = 6)
 
@@ -31,6 +30,10 @@ load("logged_data_Raw.rda")
 
 dfP %<>% 
   filter(SessionID != "6d8c455c86d59f819d30865bbaa6f60b")
+
+
+dfP$TestID[dfP$SessionID == "03c52e1f1283df72ae6c22a1beb65dd5"] <- 39
+
 
 #------- Clean ~ Row # --------
 
@@ -68,6 +71,7 @@ dfP$Sex <- recode_factor(dfP$Sex,
 dfP$FreqTempo <- recode_factor(dfP$FreqTempo,
                                 "ctrl" = "Crontrol",
                                 "Freq" = "Frequency",
+                                "freq" = "Frequency",
                                 "Temp" = "Tempo"
                                )
 
@@ -81,7 +85,8 @@ dfP$FreqTempo <- factor(dfP$FreqTempo,
 dfP$DirectionDistance <- recode_factor(dfP$DirectionDistance,
                                        "ctrl" = "Crontrol",
                                        "dire" = "Direction",
-                                       "dis" = "Distance"
+                                       "dis" = "Distance",
+                                       "Direc" = "Direction"
                                        )
 
 # Make sure all graphs and analysis keeps the same order of pams - just for concistancy
@@ -110,22 +115,28 @@ dfP %<>%
 
 dfP %<>% 
   mutate(NewState1 = ifelse(TrialID == "1" & 
-                              lag(TrialID) == "0", 1, NA),
+                              lag(TrialID) == "0", 2, NA),
          NewState2 = ifelse(TrialID == "2" & 
-                              lag(TrialID) == "1", 1, NA),
+                              lag(TrialID) == "1", 2, NA),
          NewState3 = ifelse(TrialID == "3" & 
-                              lag(TrialID) == "2", 1, NA)) %>%
+                              lag(TrialID) == "2", 2, NA)) %>%
   unite("NewTrial", NewState1:NewState3, remove = TRUE, na.rm = TRUE) %>%
   mutate(NewTrial = as.numeric(NewTrial))
 
-test <- dfP
 
-test$flag <- 0
-test$flag[unlist(mapply(":", which(test$NewMaze == "1"):which(test$NewTrial == "1")))] <- 1
-
-test %<>%
+dfP %<>%
   group_by(TestID) %>%
-  mutate(flag  = +(row_number() %in% unlist(map2(which(NewMaze == "1"):which(NewTrial == "1"), seq))))
+  mutate(flag  = +(row_number() %in% unlist(map2(which(NewMaze == "1"), which(NewTrial == "2"), seq))))
+
+dfP %<>% 
+  filter(flag != 1)
+
+#------- Clean ~ Time --------
+dfP %<>%
+  group_by(TestID) %>%
+  mutate(testTime = cumsum(TimeSinceLastFrame)) %>%
+  group_by(TestID, TrialID) %>%
+  mutate(trialTime = cumsum(TimeSinceLastFrame))
 
 #------- Save ~ Clean --------
 
@@ -138,9 +149,14 @@ dfS <- dfP %>%
   group_by(TestID, TrialID, Sex, Age, MazeID, FreqTempo, DirectionDistance) %>%
   #filter(TrialID != 0) %>%
   summarise(TravelDistance = max(TravelDistance, na.rm=TRUE),
-            MazeTime = max(MazeTime, na.rm=TRUE),
+            MazeTime = max(trialTime, na.rm=TRUE),
+            TestTime = max(testTime, na.rm=TRUE),
             DeviceButtonClickStart = sum(DeviceButtonClickStart, na.rm=TRUE),
             DeviceButtonClickStop = sum(DeviceButtonClickStop, na.rm=TRUE),
             ToggleOnID = max(ToggleOnID, na.rm=TRUE),
             ToggleOffID = max(ToggleOffID, na.rm=TRUE)) %>%
   ungroup()
+
+#------- Save Smaller df --------
+
+save(dfS, file='Small_data_Clean.rda', compress=TRUE)
