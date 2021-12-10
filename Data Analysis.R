@@ -10,6 +10,13 @@ load("Small_data_Clean.rda")
 
 #------- Travel Length --------
 
+meanLength <- dfS %>%
+  group_by(FreqTempo, DirectionDistance) %>%
+  summarise(MeanLength = mean(TravelDistance), 
+            medianLength = median(TravelDistance))
+
+meanLength
+
 dfS %>%
   filter(TrialID == 3) %>%
   ggplot(aes(x = FreqTempo, y = TravelDistance, color = DirectionDistance)) +
@@ -31,6 +38,14 @@ dfS %>%
   scale_shape_discrete("")
 
 #------- Travel Time ~ Maze Compleation Time --------
+
+meanMazeTime <- dfS %>%
+  group_by(FreqTempo, DirectionDistance) %>%
+  summarise(meanMazeTime = mean(MazeTime), 
+            medianMazeTime = median(MazeTime),
+            sdMazeTime = sd(MazeTime))
+
+meanMazeTime
 
 dfS %>%
   filter(TrialID == 3) %>%
