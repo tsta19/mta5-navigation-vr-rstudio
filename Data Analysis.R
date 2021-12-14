@@ -20,6 +20,7 @@ meanLength <- dfS %>%
 
 meanLength
 
+
 dfS %>%
   filter(TrialID == 3) %>%
   ggplot(aes(x = FreqTempo, y = TravelDistance, color = DirectionDistance)) +
@@ -259,4 +260,64 @@ summary(KWTT)
 
 DTTT <- dunnTest(dfS$TestTime, dfS$FreqTempo, method = "bonferroni")
 DTTT
+
+#------- Time effeciency ------
+
+mazeTimeEffeciencyMAZE1 <- dfS %>%
+  group_by(FreqTempo, DirectionDistance, MazeID==0) %>%
+  summarise(mazeTimeEffeciency = median((24.20/MazeTime)*100))
+
+
+mazeTimeEffeciencyMAZE2 <- dfS %>%
+  group_by(FreqTempo, DirectionDistance, MazeID==1) %>%
+  summarise(mazeTimeEffeciency = median((72.65/MazeTime)*100))
+
+mazeTimeEffeciencyMAZE3 <- dfS %>%
+  group_by(FreqTempo, DirectionDistance, MazeID==2) %>%
+  summarise(mazeTimeEffeciency = median((51.14/MazeTime)*100))
+
+mazeTimeEffeciencyMAZE1
+mazeTimeEffeciencyMAZE2
+mazeTimeEffeciencyMAZE3
+
+
+#------- Path effeciency ------
+mazePathEffeciencyMAZE1 <- dfS %>%
+  group_by(FreqTempo, DirectionDistance, MazeID==0) %>%
+  summarise(mazePathEffeciency = median((75.10/TravelDistance)*100))
+
+
+mazePathEffeciencyMAZE2 <- dfS %>%
+  group_by(FreqTempo, DirectionDistance, MazeID==1) %>%
+  summarise(mazePathEffeciency = median(((213.38+75.10)/TravelDistance)*100))
+
+mazePathEffeciencyMAZE3 <- dfS %>%
+  group_by(FreqTempo, DirectionDistance, MazeID==2) %>%
+  summarise(mazePathEffeciency = median(((149.48+(213.38+75.10))/TravelDistance)*100))
+
+mazePathEffeciencyMAZE1
+mazePathEffeciencyMAZE2
+mazePathEffeciencyMAZE3
+
+
+dfS %>%
+  group_by(FreqTempo, DirectionDistance) %>%
+  ggplot(aes(x = mazePathEffeciencyMAZE1, y = 0:100, color = DirectionDistance)) +
+  geom_boxplot() +
+  theme_classic() +
+  ylab("Effeciency %") +
+  xlab("Participants") +
+  theme(legend.position="bottom", 
+        axis.text.x = element_text(size = 14), 
+        axis.text.y = element_text(size = 14), 
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 14),
+        panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black")) +
+  scale_color_discrete("") +
+  scale_shape_discrete("")
+
 
