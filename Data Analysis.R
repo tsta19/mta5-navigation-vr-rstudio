@@ -41,6 +41,69 @@ dfS %>%
   scale_color_discrete("") +
   scale_shape_discrete("")
 
+#---------- Travel Lenght, but corrected ------------------------
+# Kan godt være man skal holde ctrl ned og klikke enter et par gange.
+
+#Only trial 1 
+dfTrial1 <- dfS %>% data.frame()
+dfTrial1 <- filter(dfTrial1, TrialID == 1) 
+
+#Only trial 2
+dfTrial2 <- dfS %>% data.frame()
+dfTrial2 <- filter(dfTrial2, TrialID == 2) 
+dfTrial2$TravelDistance <- (dfTrial2$TravelDistance - dfTrial1$TravelDistance)
+
+#Only trial 3
+dfTrial3 <- dfS %>% data.frame()
+dfTrial3 <- filter(dfTrial3, TrialID == 3) 
+dfTrial3$TravelDistance <- (dfTrial3$TravelDistance - dfTrial2$TravelDistance)
+
+
+
+#-------- Grouped summarized datasets.-----------------  
+
+dfTrial1Gp <- dfTrial1 %>% 
+  group_by(FreqTempo, TravelDistance, DirectionDistance) %>%
+  summarise(MeanLenght = mean(TravelDistance), 
+            medianLength = median(TravelDistance))
+dfTrial1Gp <- aggregate(. ~ FreqTempo, dfTrial1Gp, sum)  
+
+
+dfTrial2Gp <- dfTrial2 %>% 
+  group_by(FreqTempo, TravelDistance, DirectionDistance) %>% 
+  summarise(MeanLenght = mean(TravelDistance), 
+            medianLength = median(TravelDistance))
+dfTrial2Gp <- aggregate(. ~ FreqTempo, dfTrial2Gp, sum)
+
+
+dfTrial3Gp <- dfTrial3 %>%
+  group_by(FreqTempo, TravelDistance, DirectionDistance) %>%
+  summarise(MeanLenght = mean(TravelDistance), 
+            medianLength = median(TravelDistance))
+dfTrial3Gp <- aggregate(. ~ FreqTempo, dfTrial3Gp, sum)
+
+
+#Skift ud med en af de andre trials, hvis man ønsker.)
+
+dfTrial1 %>%
+  ggplot(aes(x = FreqTempo, y = TravelDistance, color = DirectionDistance)) +
+  geom_boxplot() +
+  theme_classic() +
+  ylab("Teavel Distance") +
+  xlab("") +
+  theme(legend.position="bottom", 
+        axis.text.x = element_text(size = 14), 
+        axis.text.y = element_text(size = 14), 
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 14),
+        panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black")) +
+  scale_color_discrete("") +
+  scale_shape_discrete("")
+
 #------- Travel Time ~ Maze Compleation Time --------
 
 meanMazeTime <- dfS %>%
@@ -282,18 +345,17 @@ mazeTimeEffeciencyMAZE3
 
 
 #------- Path effeciency ------
-mazePathEffeciencyMAZE1 <- dfS %>%
+mazePathEffeciencyMAZE1 <- dfTrial1 %>%
   group_by(FreqTempo, DirectionDistance, MazeID==0) %>%
   summarise(mazePathEffeciency = median((75.10/TravelDistance)*100))
 
-
-mazePathEffeciencyMAZE2 <- dfS %>%
+mazePathEffeciencyMAZE2 <- dfTrial2 %>%
   group_by(FreqTempo, DirectionDistance, MazeID==1) %>%
-  summarise(mazePathEffeciency = median(((213.38+75.10)/TravelDistance)*100))
+  summarise(mazePathEffeciency = median((213.38/TravelDistance)*100))
 
-mazePathEffeciencyMAZE3 <- dfS %>%
+mazePathEffeciencyMAZE3 <- dfTrial3 %>%
   group_by(FreqTempo, DirectionDistance, MazeID==2) %>%
-  summarise(mazePathEffeciency = median(((149.48+(213.38+75.10))/TravelDistance)*100))
+  summarise(mazePathEffeciency = median((149.48/TravelDistance)*100))
 
 mazePathEffeciencyMAZE1
 mazePathEffeciencyMAZE2
