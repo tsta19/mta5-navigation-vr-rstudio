@@ -33,6 +33,21 @@ dfP %<>%
 
 
 dfP$TestID[dfP$SessionID == "03c52e1f1283df72ae6c22a1beb65dd5"] <- 39
+dfP$VariableCondition[dfP$SessionID == "48fc76648ded5f3266ec7acf99b6a7be"] <- 0
+dfP$Freq.Tempo[dfP$SessionID == "685eea408ccd31196a3fa3cc0102bfe7"] <- "ctrl"
+dfP$Direction.Distance[dfP$SessionID == "685eea408ccd31196a3fa3cc0102bfe7"] <- "ctrl"
+dfP$VariableCondition[dfP$SessionID == "062a7813923c79c60590a858a62f8bc1"] <- 0
+dfP$VariableCondition[dfP$SessionID == "faf4bc05969d0562c97caa49300623cc"] <- 0
+dfP$Freq.Tempo[dfP$SessionID == "0b7efeddfda6e83fa30b9a978b28abd7"] <- "Temp"
+dfP$VariableCondition[dfP$SessionID == "a9bc20799af465863031b7229d0e6221"] <- 2
+dfP$Age[dfP$SessionID == "fb523d076f2f67cf04a15db80d2e10c8"] <- 25
+dfP$VariableCondition[dfP$SessionID == "f5b90eb6c1ce95b4bf6b083a3e449094"] <- 1
+dfP$Age[dfP$SessionID == "29f0865c073707cdddd6a21c74886c92"] <- 22
+dfP$Sex[dfP$SessionID == "29f0865c073707cdddd6a21c74886c92"] <- F
+dfP$Age[dfP$SessionID == "9f4065d5c23eac4272771074b5231c04"] <- 23
+dfP$VariableCondition[dfP$SessionID == "9f4065d5c23eac4272771074b5231c04"] <- 2
+dfP$VariableCondition[dfP$SessionID == "8c572d924904270febcf9edd1fcb28fd"] <- 0
+dfP$Age[dfP$SessionID == "b57ec5e6e3bf26d0f6fbeb83f98b36f5"] <- 27
 
 
 #------- Clean ~ Row # --------
@@ -69,7 +84,7 @@ dfP$Sex <- recode_factor(dfP$Sex,
 
 # Rename the different Variables into something more telling
 dfP$FreqTempo <- recode_factor(dfP$FreqTempo,
-                                "ctrl" = "Crontrol",
+                                "ctrl" = "Control",
                                 "Freq" = "Frequency",
                                 "freq" = "Frequency",
                                 "Temp" = "Tempo"
@@ -77,13 +92,13 @@ dfP$FreqTempo <- recode_factor(dfP$FreqTempo,
 
 # Make sure all graphs and analysis keeps the same order of pams - just for concistancy
 dfP$FreqTempo <- factor(dfP$FreqTempo, 
-                        levels=c("Crontrol", 
+                        levels=c("Control", 
                                  "Frequency",
                                  "Tempo"))
 
 # Rename the different Variables into something more telling
 dfP$DirectionDistance <- recode_factor(dfP$DirectionDistance,
-                                       "ctrl" = "Crontrol",
+                                       "ctrl" = "Control",
                                        "dire" = "Direction",
                                        "dis" = "Distance",
                                        "Direc" = "Direction"
@@ -91,7 +106,7 @@ dfP$DirectionDistance <- recode_factor(dfP$DirectionDistance,
 
 # Make sure all graphs and analysis keeps the same order of pams - just for concistancy
 dfP$DirectionDistance <- factor(dfP$DirectionDistance, 
-                        levels=c("Crontrol", 
+                        levels=c("Control", 
                                  "Direction",
                                  "Distance"))
 
@@ -157,6 +172,43 @@ dfS <- dfP %>%
             ToggleOffID = max(ToggleOffID, na.rm=TRUE)) %>%
   ungroup()
 
+summary(dfS)
+
 #------- Save Smaller df --------
 
 save(dfS, file='Small_data_Clean.rda', compress=TRUE)
+
+subdataCC <- dfP[dfP$DirectionDistance == "Control", c("MazeID", "PlayerPositionX", "PlayerPositionZ")]
+plot(subdataCC$PlayerPositionX, subdataCC$PlayerPositionZ, 
+     lwd=0.05, 
+     main = "Control group path",
+     xlab = "Player X position",
+     ylab = "Player Y position")
+
+subdataDire <- dfP[dfP$DirectionDistance == "Direction", c("PlayerPositionX", "PlayerPositionZ")]
+plot(subdataDire$PlayerPositionX, subdataDire$PlayerPositionZ, 
+     lwd=0.05, 
+     main = "Direction group path",
+     xlab = "Player X position",
+     ylab = "Player Y position")
+
+subdataDis <- dfP[dfP$DirectionDistance == "Distance", c("PlayerPositionX", "PlayerPositionZ")]
+plot(subdataDis$PlayerPositionX, subdataDis$PlayerPositionZ, 
+     lwd=0.05, 
+     main = "Distance group path",
+     xlab = "Player X position",
+     ylab = "Player Y position")
+
+subdataFreq <- dfP[dfP$FreqTempo == "Frequency", c("PlayerPositionX", "PlayerPositionZ")]
+plot(subdataDis$PlayerPositionX, subdataDis$PlayerPositionZ, 
+     lwd=0.05, 
+     main = "Frequency group path",
+     xlab = "Player X position",
+     ylab = "Player Y position")
+
+subdataTempo <- dfP[dfP$FreqTempo == "Tempo", c("PlayerPositionX", "PlayerPositionZ")]
+plot(subdataDis$PlayerPositionX, subdataDis$PlayerPositionZ, 
+     lwd=0.05, 
+     main = "Tempo group path",
+     xlab = "Player X position",
+     ylab = "Player Y position")

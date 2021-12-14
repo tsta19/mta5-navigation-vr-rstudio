@@ -3,7 +3,10 @@
 #------- libraries ------------
 library(tidyverse)
 library(magrittr)
-
+library(dplyr)
+library(car)
+library(dunn.test)
+library(FSA)
 #------- Load Data ------------
 load("logged_data_Clean.rda")
 load("Small_data_Clean.rda")
@@ -187,4 +190,73 @@ dfTest %>%
   scale_shape_discrete("")
 
 
+
+
+#------- normality test
+STD <- shapiro.test(dfS$TravelDistance)
+qqPlot(dfS$TravelDistance)
+qqPlot(dfS$TestTime)
+
+
+#------- Homogeneity of variance
+model2 <- lm(log(TravelDistance) ~ DirectionDistance, data = dfS)
+plot(model2, 3)
+
+
+?bptest
+BPTD <- lmtest::bptest(model2)
+summary(BPTD)
+
+model3 <- lm(TestTime ~ FreqTempo, data = dfS)
+plot(model2, 3)
+
+BPTT <- lmtest::bptest(model2)
+summary(BPTT)
+
+
+#------- Two Way Anova
+
+#two way anova
+dfS %>%
+  filter(TrialID == 3)
+  anova2TD <- aov(TravelDistance ~ FreqTempo + DirectionDistance, data = dfS)
+summary(anova2TD)
+
+dfS %>%
+  filter(TrialID == 3)
+  anova2TT <- aov(TestTime ~ FreqTempo + DirectionDistance, data = dfS)
+summary(anova2TT)
+
+#------- One Way Anova
+#one way anova
+FreqTempoAnovaTD <- aov(TravelDistance ~ FreqTempo, data = dfS)
+summary(FreqTempoAnovaTD)
+
+DirDisAnovaTD <- aov(TravelDistance ~ DirectionDistance, data = dfS)
+summary(DirDisAnovaTD)
+
+
+FreqTempoAnovaTT <- aov(TestTime ~ FreqTempo, data = dfS)
+summary(FreqTempoAnovaTT)
+
+DirDisAnovaTT <- aov(TestTime ~ DirectionDistance, data = dfS)
+summary(DirDisAnovaTT)
+
+#------- Two Way Manova
+manRes <- manova(cbind(dfS$DirectionDistance, dfS$FreqTempo) ~ dfS$TravelDistance, data = dfS)
+summary(manRes)
+summary.aov(manRes)
+
+#------- Kruskal-Wallis test
+KWTD <- kruskal.test(TravelDistance ~ FreqTempo, data = dfS)
+summary(KWTD)
+
+DTTD <- dunnTest(dfS$TravelDistance, dfS$DirectionDistance, method = "bonferroni")
+DTTD
+
+KWTT <- kruskal.test(TestTime ~ FreqTempo, data = dfS)
+summary(KWTT)
+
+DTTT <- dunnTest(dfS$TestTime, dfS$FreqTempo, method = "bonferroni")
+DTTT
 
