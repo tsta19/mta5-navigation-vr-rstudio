@@ -108,15 +108,43 @@ dfTrial3 %>%
 
 #----------------- PLOT POINT VISES I PLOTS -------------
 
-newPlotdata <- cbind(mazePathEffeciencyMAZE3,mazeTimeEffeciencyMAZE3)
+#newPlotdataMaze1 <- cbind(mazePathEffeciencyMAZE1,mazeTimeEffeciencyMAZE1)
+#newPlotdataMaze2 <- cbind(mazePathEffeciencyMAZE2,mazeTimeEffeciencyMAZE2)
+#newPlotdataMaze3 <- cbind(mazePathEffeciencyMAZE3,mazeTimeEffeciencyMAZE3)
+
+mergedStuffMaze1 <- merge(mazePathEffeciencyMAZE1, mazeTimeEffeciencyMAZE1)
+mergedStuffMaze2 <- merge(mazePathEffeciencyMAZE2, mazeTimeEffeciencyMAZE2)
+mergedStuffMaze3 <- merge(mazePathEffeciencyMAZE3, mazeTimeEffeciencyMAZE3)
+
+MergedDoubleBatch <- rbind(mergedStuffMaze1,mergedStuffMaze2,mergedStuffMaze3)
+
+
+
+ScatPlotMazes <- ggplot(data = MergedDoubleBatch, aes(x=MazeID, y=mazeTimeEffeciency, colour = FreqTempo, shape = DirectionDistance, size = 2)) + 
+  geom_point() 
+
+ScatPlotMazes + guides(
+      colour = guide_legend(order = 1, "Audio", override.aes = list(size=6)),
+      shape = guide_legend(order = 2, "Device", override.aes = list(size=5)),
+      size = guide_none(size)
+    ) +  
+  ylab("Effeciency") + 
+  xlab("Maze ID") + 
+  ggtitle("Time Effeciency") +
+  theme(axis.text = element_text(size = 14), axis.text.x = element_text(size=13))
+
+
+#------------------------------- PLOT POINT VISES I PLOTS ---------------------
+
+  
 
 ggplot() + 
-  geom_point(data = newPlotdata, aes(x=mazePathEffeciency, y=mazeTimeEffeciency, color=DirectionDistance...2, shape= FreqTempo...1, size = 3)) +  
+  geom_point(data = MergedDoubleBatch, aes(x=MazeID, y=mazePathEffeciency, color=DirectionDistance, shape= FreqTempo)) +  
   geom_smooth(method=lm) + 
   theme_classic() +
   ggtitle("") +
-  ylab("Time Effeciency") +
-  xlab("Path Effeciency") +
+  ylab("Path Effeciency") +
+  xlab("Maze ID") +
   guides(color = guide_legend(order = 1), shape = guide_legend(order = 2),
         size = guide_legend(order = 3)) +
   theme(axis.text.x = element_text(size = 14), 
@@ -360,16 +388,19 @@ DTTT
 #------- Time effeciency ------
 
 mazeTimeEffeciencyMAZE1 <- dfS %>%
-  group_by(FreqTempo, DirectionDistance, MazeID==0) %>%
+  filter(MazeID==0) %>%
+  group_by(FreqTempo, DirectionDistance, MazeID) %>%
   summarise(mazeTimeEffeciency = median((24.20/MazeTime)*100))
 
 
 mazeTimeEffeciencyMAZE2 <- dfS %>%
-  group_by(FreqTempo, DirectionDistance, MazeID==1) %>%
+  filter(MazeID==1) %>%
+  group_by(FreqTempo, DirectionDistance, MazeID) %>%
   summarise(mazeTimeEffeciency = median((72.65/MazeTime)*100))
 
 mazeTimeEffeciencyMAZE3 <- dfS %>%
-  group_by(FreqTempo, DirectionDistance, MazeID==2) %>%
+  filter(MazeID==2) %>%
+  group_by(FreqTempo, DirectionDistance, MazeID) %>%
   summarise(mazeTimeEffeciency = median((51.14/MazeTime)*100))
 
 mazeTimeEffeciencyMAZE1
@@ -379,15 +410,18 @@ mazeTimeEffeciencyMAZE3
 
 #------- Path effeciency ------
 mazePathEffeciencyMAZE1 <- dfTrial1 %>%
-  group_by(FreqTempo, DirectionDistance, MazeID==0) %>%
+  filter(MazeID==0) %>%
+  group_by(FreqTempo, DirectionDistance, MazeID) %>%
   summarise(mazePathEffeciency = median((75.10/TravelDistance)*100))
 
 mazePathEffeciencyMAZE2 <- dfTrial2 %>%
-  group_by(FreqTempo, DirectionDistance, MazeID==1) %>%
+  filter(MazeID==1) %>%
+  group_by(FreqTempo, DirectionDistance, MazeID) %>%
   summarise(mazePathEffeciency = median((213.38/TravelDistance)*100))
 
 mazePathEffeciencyMAZE3 <- dfTrial3 %>%
-  group_by(FreqTempo, DirectionDistance, MazeID==2) %>%
+  filter(MazeID==2) %>%
+  group_by(FreqTempo, DirectionDistance, MazeID) %>%
   summarise(mazePathEffeciency = median((149.48/TravelDistance)*100))
 
 mazePathEffeciencyMAZE1
