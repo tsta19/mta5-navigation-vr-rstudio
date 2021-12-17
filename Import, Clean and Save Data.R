@@ -178,6 +178,8 @@ summary(dfS)
 
 save(dfS, file='Small_data_Clean.rda', compress=TRUE)
 
+#------- Plot player coordinates
+
 subdataCC <- dfP[dfP$DirectionDistance == "Control", c("MazeID", "PlayerPositionX", "PlayerPositionZ")]
 plot(subdataCC$PlayerPositionX, subdataCC$PlayerPositionZ, 
      lwd=0.05, 

@@ -7,6 +7,9 @@ library(dplyr)
 library(car)
 library(dunn.test)
 library(FSA)
+#library(lsmeans)
+#library(multcompView)
+library(MASS)
 #------- Load Data ------------
 load("logged_data_Clean.rda")
 load("Small_data_Clean.rda")
@@ -27,7 +30,7 @@ dfS %>%
   geom_boxplot() +
   theme_classic() +
   ylab("Teavel Distance") +
-  xlab("") +
+  xlab("Condition groups") +
   theme(legend.position="bottom", 
         axis.text.x = element_text(size = 14), 
         axis.text.y = element_text(size = 14), 
@@ -46,19 +49,58 @@ dfS %>%
 
 #Only trial 1 
 dfTrial1 <- dfS %>% data.frame()
-dfTrial1 <- filter(dfTrial1, TrialID == 1) 
+dfTrial1 <- filter(dfTrial1, MazeID == 0) 
 
 #Only trial 2
 dfTrial2 <- dfS %>% data.frame()
-dfTrial2 <- filter(dfTrial2, TrialID == 2) 
+dfTrial2 <- filter(dfTrial2, MazeID == 1) 
 dfTrial2$TravelDistance <- (dfTrial2$TravelDistance - dfTrial1$TravelDistance)
 
 #Only trial 3
 dfTrial3 <- dfS %>% data.frame()
+<<<<<<< Updated upstream
 dfTrial3 <- filter(dfTrial3, TrialID == 3) 
 dfTrial3$TravelDistance <- (dfTrial3$TravelDistance - dfTrial2$TravelDistance - dfTrial1$TravelDistance)
+=======
+dfTrial3 <- filter(dfTrial3, MazeID == 2) 
+dfTrial3$TravelDistance <- (dfTrial3$TravelDistance - dfTrial2$TravelDistance - dfTrial1$TravelDistance)
 
+#Kruskal-wallis test for maze 0
+KWTDT1 <- kruskal.test(MazeTime ~ FreqTempo, data = dfTrial1)
+KWTDT1
 
+#Kruskal-wallis test for maze 1
+KWTDT2 <- kruskal.test(MazeTime ~ DirectionDistance, data = dfTrial2)
+KWTDT2
+
+#Kruskal-wallis test for maze 2
+KWTDT3 <- kruskal.test(MazeTime ~ FreqTempo, data = dfTrial3)
+KWTDT3
+
+DTTDT3 <- dunnTest(dfTrial3$MazeTime, dfTrial3$DirectionDistance, method = "bonferroni")
+DTTDT3
+
+#ANOVA test for maze 0
+FreqTempoAnovaTDT1 <- aov(TravelDistance ~ DirectionDistance * FreqTempo, data = dfTrial1)
+summary(FreqTempoAnovaTDT1)
+
+FreqTempoAnovaTTT1 <- aov(MazeTime ~ DirectionDistance * FreqTempo, data = dfTrial1)
+summary(FreqTempoAnovaTTT1)
+
+#ANOVA test for maze 1
+FreqTempoAnovaTDT2 <- aov(TravelDistance ~ DirectionDistance * FreqTempo, data = dfTrial2)
+summary(FreqTempoAnovaTDT2)
+>>>>>>> Stashed changes
+
+FreqTempoAnovaTTT2 <- aov(MazeTime ~ DirectionDistance * FreqTempo, data = dfTrial2)
+summary(FreqTempoAnovaTTT2)
+
+#ANOVA test for maze 2
+FreqTempoAnovaTDT3 <- aov(TravelDistance ~ DirectionDistance * FreqTempo, data = dfTrial3)
+summary(FreqTempoAnovaTDT3)
+
+FreqTempoAnovaTTT3 <- aov(MazeTime ~ DirectionDistance * FreqTempo, data = dfTrial3)
+summary(FreqTempoAnovaTTT3)
 
 #-------- Grouped summarized datasets.-----------------  
 
@@ -181,7 +223,7 @@ dfS %>%
   geom_boxplot() +
   theme_classic() +
   ylab("Compleation time") +
-  xlab("") +
+  xlab("Condition groups") +
   theme(legend.position="bottom", 
         axis.text.x = element_text(size = 14), 
         axis.text.y = element_text(size = 14), 
@@ -224,7 +266,7 @@ dfS %>%
   geom_boxplot() +
   theme_classic() +
   ylab("Compleation time") +
-  xlab("") +
+  xlab("MazeID") +
   theme(legend.position="bottom", 
         axis.text.x = element_text(size = 14), 
         axis.text.y = element_text(size = 14), 
@@ -246,7 +288,7 @@ dfS %>%
   geom_boxplot() +
   theme_classic() +
   ylab("Compleation time") +
-  xlab("") +
+  xlab("TrialID") +
   theme(legend.position="bottom", 
         axis.text.x = element_text(size = 14), 
         axis.text.y = element_text(size = 14), 
@@ -285,10 +327,10 @@ dfTest <- dfS %>%
 dfTest %>%
   ggplot(aes(x = TrialID,
              y = meanMazeTime,
-             group = FreqTempo,
-             color = FreqTempo,
-             shape = FreqTempo)) +
-  facet_grid(cols = vars(DirectionDistance)) +
+             group = DirectionDistance,
+             color = DirectionDistance,
+             shape = DirectionDistance)) +
+  facet_grid(cols = vars(FreqTempo)) +
   geom_point(position = position_dodge(0.1), alpha=1, size = 5) +
   geom_line(position = position_dodge(0.1),
             alpha = 1,
@@ -315,42 +357,28 @@ dfTest %>%
   scale_shape_discrete("")
 
 
-
-
-#------- normality test
-STD <- shapiro.test(dfS$TravelDistance)
-qqPlot(dfS$TravelDistance)
-qqPlot(dfS$TestTime)
-
-
-#------- Homogeneity of variance
-model2 <- lm(log(TravelDistance) ~ DirectionDistance, data = dfS)
-plot(model2, 3)
-
-
-?bptest
-BPTD <- lmtest::bptest(model2)
-summary(BPTD)
-
-model3 <- lm(TestTime ~ FreqTempo, data = dfS)
-plot(model2, 3)
-
-BPTT <- lmtest::bptest(model2)
-summary(BPTT)
-
-
 #------- Two Way Anova
 
 #two way anova
+modelTD <- lm(TravelDistance ~ FreqTempo * DirectionDistance, data = dfS)
+
 dfS %>%
   filter(TrialID == 3)
-  anova2TD <- aov(TravelDistance ~ FreqTempo + DirectionDistance, data = dfS)
+  anova2TD <- aov(TravelDistance ~ FreqTempo * DirectionDistance, data = dfS)
 summary(anova2TD)
 
 dfS %>%
   filter(TrialID == 3)
-  anova2TT <- aov(TestTime ~ FreqTempo + DirectionDistance, data = dfS)
+  anova2TT <- aov(TestTime ~ FreqTempo * DirectionDistance, data = dfS)
 summary(anova2TT)
+
+shapiro.test(residuals(object = modelTD))
+leveneTest(TravelDistance ~ FreqTempo * DirectionDistance, data = dfS)
+
+TUKEY <- TukeyHSD(x=anova2TD, dfS$DirectionDistance, conf.level=0.95)
+
+plot(TUKEY, las=1, col="brown")
+
 
 #------- One Way Anova
 #one way anova
@@ -368,13 +396,18 @@ DirDisAnovaTT <- aov(TestTime ~ DirectionDistance, data = dfS)
 summary(DirDisAnovaTT)
 
 #------- Two Way Manova
-manRes <- manova(cbind(dfS$DirectionDistance, dfS$FreqTempo) ~ dfS$TravelDistance, data = dfS)
+dep_vars <- cbind(dfS$TravelDistance, dfS$TestTime)
+manRes <- manova(dep_vars ~ DirectionDistance * FreqTempo, data = dfS)
 summary(manRes)
-summary.aov(manRes)
+
+posthoc2WM <- lda(dfS$DirectionDistance ~ dep_vars, CV=F)
+
 
 #------- Kruskal-Wallis test
-KWTD <- kruskal.test(TravelDistance ~ FreqTempo, data = dfS)
-summary(KWTD)
+dfS %>%
+  filter(TrialID == 3)
+  KWTD <- kruskal.test(TravelDistance ~ FreqTempo, data = dfS)
+  KWTD
 
 DTTD <- dunnTest(dfS$TravelDistance, dfS$DirectionDistance, method = "bonferroni")
 DTTD
