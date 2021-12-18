@@ -47,23 +47,24 @@ dfS %>%
 #---------- Travel Lenght, but corrected ------------------------
 # Kan godt være man skal holde ctrl ned og klikke enter et par gange.
 
+
+
+
 #Only trial 1 
 dfTrial1 <- dfS %>% data.frame()
-dfTrial1 <- filter(dfTrial1, MazeID == 0) 
+dfTrial1 <- filter(dfTrial1, TrialID == 1) 
 
 #Only trial 2
 dfTrial2 <- dfS %>% data.frame()
-dfTrial2 <- filter(dfTrial2, MazeID == 1) 
+dfTrial2 <- filter(dfTrial2, TrialID == 2) 
 dfTrial2$TravelDistance <- (dfTrial2$TravelDistance - dfTrial1$TravelDistance)
 
 #Only trial 3
 dfTrial3 <- dfS %>% data.frame()
-<<<<<<< Updated upstream
+#<<<<<<< Updated upstream
 dfTrial3 <- filter(dfTrial3, TrialID == 3) 
 dfTrial3$TravelDistance <- (dfTrial3$TravelDistance - dfTrial2$TravelDistance - dfTrial1$TravelDistance)
-=======
-dfTrial3 <- filter(dfTrial3, MazeID == 2) 
-dfTrial3$TravelDistance <- (dfTrial3$TravelDistance - dfTrial2$TravelDistance - dfTrial1$TravelDistance)
+
 
 #Kruskal-wallis test for maze 0
 KWTDT1 <- kruskal.test(MazeTime ~ FreqTempo, data = dfTrial1)
@@ -90,7 +91,7 @@ summary(FreqTempoAnovaTTT1)
 #ANOVA test for maze 1
 FreqTempoAnovaTDT2 <- aov(TravelDistance ~ DirectionDistance * FreqTempo, data = dfTrial2)
 summary(FreqTempoAnovaTDT2)
->>>>>>> Stashed changes
+#>>>>>>> Stashed changes
 
 FreqTempoAnovaTTT2 <- aov(MazeTime ~ DirectionDistance * FreqTempo, data = dfTrial2)
 summary(FreqTempoAnovaTTT2)
@@ -159,6 +160,8 @@ mergedStuffMaze2 <- merge(mazePathEffeciencyMAZE2, mazeTimeEffeciencyMAZE2)
 mergedStuffMaze3 <- merge(mazePathEffeciencyMAZE3, mazeTimeEffeciencyMAZE3)
 
 MergedDoubleBatch <- rbind(mergedStuffMaze1,mergedStuffMaze2,mergedStuffMaze3)
+
+trial123 <- rbind(dfTrial1,dfTrial2,dfTrial3)
 
 
 
