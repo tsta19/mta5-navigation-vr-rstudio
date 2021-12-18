@@ -426,18 +426,21 @@ DTTT
 mazeTimeEffeciencyMAZE1 <- dfS %>%
   filter(MazeID==0) %>%
   group_by(FreqTempo, DirectionDistance, MazeID) %>%
-  summarise(mazeTimeEffeciency = median((24.20/MazeTime)*100))
+  summarise(mazeTimeEffeciency = mean((24.20/MazeTime)*100, na.rm = TRUE),
+            mazePathESTD = sd((24.20/MazeTime)*100, na.rm = TRUE))
 
 
 mazeTimeEffeciencyMAZE2 <- dfS %>%
   filter(MazeID==1) %>%
   group_by(FreqTempo, DirectionDistance, MazeID) %>%
-  summarise(mazeTimeEffeciency = median((72.65/MazeTime)*100))
+  summarise(mazeTimeEffeciency = mean((72.65/MazeTime)*100, na.rm = TRUE),
+            mazePathESTD = sd((72.65/MazeTime)*100, na.rm = TRUE))
 
 mazeTimeEffeciencyMAZE3 <- dfS %>%
   filter(MazeID==2) %>%
   group_by(FreqTempo, DirectionDistance, MazeID) %>%
-  summarise(mazeTimeEffeciency = median((51.14/MazeTime)*100))
+  summarise(mazeTimeEffeciency = mean((51.14/MazeTime)*100, na.rm = TRUE),
+            mazePathESTD = sd((51.14/MazeTime)*100, na.rm = TRUE))
 
 mazeTimeEffeciencyMAZE1
 mazeTimeEffeciencyMAZE2
@@ -448,17 +451,20 @@ mazeTimeEffeciencyMAZE3
 mazePathEffeciencyMAZE1 <- dfTrial1 %>%
   filter(MazeID==0) %>%
   group_by(FreqTempo, DirectionDistance, MazeID) %>%
-  summarise(mazePathEffeciency = median((75.10/TravelDistance)*100))
+  summarise(mazePathEffeciency = mean((75.10/TravelDistance)*100, na.rm = TRUE),
+            mazePathESTD = sd((75.10/TravelDistance)*100, na.rm = TRUE))
 
 mazePathEffeciencyMAZE2 <- dfTrial2 %>%
   filter(MazeID==1) %>%
   group_by(FreqTempo, DirectionDistance, MazeID) %>%
-  summarise(mazePathEffeciency = median((213.38/TravelDistance)*100))
+  summarise(mazePathEffeciency = mean((213.38/TravelDistance)*100, na.rm = TRUE),
+            mazePathESTD = sd((213.38/TravelDistance)*100, na.rm = TRUE))
 
 mazePathEffeciencyMAZE3 <- dfTrial3 %>%
   filter(MazeID==2) %>%
   group_by(FreqTempo, DirectionDistance, MazeID) %>%
-  summarise(mazePathEffeciency = median((149.48/TravelDistance)*100))
+  summarise(mazePathEffeciency = mean((149.48/TravelDistance)*100, na.rm = TRUE),
+            mazePathESTD = sd((149.48/TravelDistance)*100, na.rm = TRUE))
 
 mazePathEffeciencyMAZE1
 mazePathEffeciencyMAZE2
