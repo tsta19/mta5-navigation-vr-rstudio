@@ -433,23 +433,39 @@ DTTT
 #------- Time effeciency ------
 
 mazeTimeEffeciencyMAZE1 <- trial123 %>%
-  filter(MazeID==0) %>%
-  group_by(FreqTempo, DirectionDistance, MazeID) %>%
+  filter(TrialID==1) %>%
+  group_by(FreqTempo, DirectionDistance, TrialID) %>%
   summarise(mazeTimeEffeciency = mean((24.20/MazeTime)*100, na.rm = TRUE),
             mazeTimeESTD = sd((24.20/MazeTime)*100, na.rm = TRUE))
 
+mazeTimeSet1 <- trial123 %>%
+  filter(TrialID==1) %>%
+  summarise(mazeTimeEfficiency = (24.20/MazeTime)*100)
+
+
 
 mazeTimeEffeciencyMAZE2 <- trial123 %>%
-  filter(MazeID==1) %>%
-  group_by(FreqTempo, DirectionDistance, MazeID) %>%
+  filter(TrialID==2) %>%
+  group_by(FreqTempo, DirectionDistance, TrialID) %>%
   summarise(mazeTimeEffeciency = mean((72.65/MazeTime)*100, na.rm = TRUE),
             mazeTimeESTD = sd((72.65/MazeTime)*100, na.rm = TRUE))
 
+mazeTimeSet2 <- trial123 %>%
+  filter(TrialID==2) %>%
+  summarise(mazeTimeEfficiency = (72.65/MazeTime)*100)
+
+
+
 mazeTimeEffeciencyMAZE3 <- trial123 %>%
-  filter(MazeID==2) %>%
-  group_by(FreqTempo, DirectionDistance, MazeID) %>%
+  filter(TrialID==3) %>%
+  group_by(FreqTempo, DirectionDistance, TrialID) %>%
   summarise(mazeTimeEffeciency = mean((51.14/MazeTime)*100, na.rm = TRUE),
             mazeTimeESTD = sd((51.14/MazeTime)*100, na.rm = TRUE))
+
+mazeTimeSet3 <- trial123 %>%
+  filter(TrialID==3) %>%
+  summarise(mazeTimeEfficiency = (51.14/MazeTime)*100)
+
 
 mazeTimeEffeciencyMAZE1
 mazeTimeEffeciencyMAZE2
@@ -457,47 +473,65 @@ mazeTimeEffeciencyMAZE3
 
 
 #------- Path effeciency ------
-mazePathEffeciencyMAZE1 <- dfTrial1 %>%
-  filter(MazeID==0) %>%
-  group_by(FreqTempo, DirectionDistance, MazeID) %>%
+mazePathEffeciencyMAZE1 <- trial123 %>%
+  filter(TrialID==1) %>%
+  group_by(FreqTempo, DirectionDistance, TrialID) %>%
   summarise(mazePathEffeciency = mean((75.10/TravelDistance)*100, na.rm = TRUE),
             mazePathESTD = sd((75.10/TravelDistance)*100, na.rm = TRUE))
 
-mazePathEffeciencyMAZE2 <- dfTrial2 %>%
-  filter(MazeID==1) %>%
-  group_by(FreqTempo, DirectionDistance, MazeID) %>%
+mazePathSet1 <- trial123 %>%
+  filter(TrialID==1) %>%
+  summarise(mazePathEfficiency = (75.10/TravelDistance)*100)
+
+
+mazePathEffeciencyMAZE2 <- trial123 %>%
+  filter(TrialID==2) %>%
+  group_by(FreqTempo, DirectionDistance, TrialID) %>%
   summarise(mazePathEffeciency = mean((213.38/TravelDistance)*100, na.rm = TRUE),
             mazePathESTD = sd((213.38/TravelDistance)*100, na.rm = TRUE))
 
-mazePathEffeciencyMAZE3 <- dfTrial3 %>%
-  filter(MazeID==2) %>%
-  group_by(FreqTempo, DirectionDistance, MazeID) %>%
+mazePathSet2 <- trial123 %>%
+  filter(TrialID==2) %>%
+  summarise(mazePathEfficiency = (213.38/TravelDistance)*100)
+
+
+
+mazePathEffeciencyMAZE3 <- trial123 %>%
+  filter(TrialID==3) %>%
+  group_by(FreqTempo, DirectionDistance, TrialID) %>%
   summarise(mazePathEffeciency = mean((149.48/TravelDistance)*100, na.rm = TRUE),
             mazePathESTD = sd((149.48/TravelDistance)*100, na.rm = TRUE))
+
+mazePathSet3 <- trial123 %>%
+  filter(TrialID==3) %>%
+  summarise(mazePathEfficiency = (149.48/TravelDistance)*100)
+
+
 
 mazePathEffeciencyMAZE1
 mazePathEffeciencyMAZE2
 mazePathEffeciencyMAZE3
 
+timeEfficiencySet <- bind_rows(mazeTimeSet1, mazeTimeSet2, mazeTimeSet3)
+pathEfficiencySet <- bind_rows(mazePathSet1, mazePathSet2, mazePathSet3)
+trial123 %<>%
+  mutate(pathEfficiencySet) %>%
+  mutate(timeEfficiencySet)
 
-dfS %>%
-  group_by(FreqTempo, DirectionDistance) %>%
-  ggplot(aes(x = mazePathEffeciencyMAZE1, y = 0:100, color = DirectionDistance)) +
-  geom_boxplot() +
-  theme_classic() +
-  ylab("Effeciency %") +
-  xlab("Participants") +
-  theme(legend.position="bottom", 
-        axis.text.x = element_text(size = 14), 
-        axis.text.y = element_text(size = 14), 
-        axis.title = element_text(size = 14),
-        legend.title = element_text(size = 14),
-        legend.text = element_text(size = 14),
-        panel.border = element_blank(), 
-        panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(), 
-        axis.line = element_line(colour = "black")) +
-  scale_color_discrete("") +
-  scale_shape_discrete("")
+
+#------- Kruskal-Wallis test for Efficiencies
+
+KWE <- kruskal.test(trial123$mazePathEfficiency ~ trial123$mazeTimeEfficiency)
+KWE
+
+DTTD <- dunnTest(dfS$TravelDistance, dfS$DirectionDistance, method = "bonferroni")
+DTTD
+
+KWTT <- kruskal.test(TestTime ~ FreqTempo, data = dfS)
+summary(KWTT)
+
+DTTT <- dunnTest(dfS$TestTime, dfS$FreqTempo, method = "bonferroni")
+DTTT
+
 
 
