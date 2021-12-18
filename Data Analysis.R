@@ -125,7 +125,7 @@ dfTrial3Gp <- dfTrial3 %>%
             medianLength = median(TravelDistance))
 dfTrial3Gp <- aggregate(. ~ FreqTempo, dfTrial3Gp, sum)
 
-
+#---------------------------------------------------------
 #Skift ud med en af de andre trials, hvis man ønsker.)
 
 dfTrial3 %>%
@@ -166,7 +166,7 @@ trial123 <- rbind(dfTrial1,dfTrial2,dfTrial3)
 GROUPINGgroups <- MergedDoubleBatch %>%
   unite("Gp", FreqTempo:DirectionDistance, remove=FALSE)
 
-ScatPlotMazes <- ggplot(data = GROUPINGgroups, aes(x=MazeID, y=mazeTimeEffeciency, colour = FreqTempo, shape = DirectionDistance, size = 2, group = Gp))+
+ScatPlotMazes <- ggplot(data = GROUPINGgroups, aes(x=MTrialID, y=mazeTimeEffeciency, colour = FreqTempo, shape = DirectionDistance, size = 2, group = Gp))+
   geom_line(size = 1) +
   geom_point() 
 #position = position_dodge(0.1), alpha=1) +
@@ -180,9 +180,9 @@ ScatPlotMazes + guides(
       shape = guide_legend(order = 2, "Device", override.aes = list(size=5)),
       size = guide_none(size)
       ) +  
-  ylab("Effeciency") + 
-  xlab("Maze ID") + 
-  ggtitle("Time Effeciency") +
+  ylab("Time Effeciency") + 
+  xlab("Trial ID") + 
+  ggtitle("Trial Time Effeciency") +
   #geom_line(aes(linetype=1))+
   theme_classic() + 
   theme(axis.text = element_text(size = 14), axis.text.x = element_text(size=13))
