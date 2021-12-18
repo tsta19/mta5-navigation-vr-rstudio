@@ -163,19 +163,28 @@ MergedDoubleBatch <- rbind(mergedStuffMaze1,mergedStuffMaze2,mergedStuffMaze3)
 
 trial123 <- rbind(dfTrial1,dfTrial2,dfTrial3)
 
+GROUPINGgroups <- MergedDoubleBatch %>%
+  unite("Gp", FreqTempo:DirectionDistance, remove=FALSE)
 
-
-ScatPlotMazes <- ggplot(data = MergedDoubleBatch, aes(x=MazeID, y=mazeTimeEffeciency, colour = FreqTempo, shape = DirectionDistance, size = 2)) + 
+ScatPlotMazes <- ggplot(data = GROUPINGgroups, aes(x=MazeID, y=mazeTimeEffeciency, colour = FreqTempo, shape = DirectionDistance, size = 2, group = Gp))+
+  geom_line(size = 1) +
   geom_point() 
+#position = position_dodge(0.1), alpha=1) +
+  
+#geom_line(aes(group = position = position_dodge(0.1),
+            #alpha = 1,
+            #size = 1)
 
 ScatPlotMazes + guides(
       colour = guide_legend(order = 1, "Audio", override.aes = list(size=6)),
       shape = guide_legend(order = 2, "Device", override.aes = list(size=5)),
       size = guide_none(size)
-    ) +  
+      ) +  
   ylab("Effeciency") + 
   xlab("Maze ID") + 
   ggtitle("Time Effeciency") +
+  #geom_line(aes(linetype=1))+
+  theme_classic() + 
   theme(axis.text = element_text(size = 14), axis.text.x = element_text(size=13))
 
 
@@ -423,24 +432,24 @@ DTTT
 
 #------- Time effeciency ------
 
-mazeTimeEffeciencyMAZE1 <- dfS %>%
+mazeTimeEffeciencyMAZE1 <- trial123 %>%
   filter(MazeID==0) %>%
   group_by(FreqTempo, DirectionDistance, MazeID) %>%
   summarise(mazeTimeEffeciency = mean((24.20/MazeTime)*100, na.rm = TRUE),
-            mazePathESTD = sd((24.20/MazeTime)*100, na.rm = TRUE))
+            mazeTimeESTD = sd((24.20/MazeTime)*100, na.rm = TRUE))
 
 
-mazeTimeEffeciencyMAZE2 <- dfS %>%
+mazeTimeEffeciencyMAZE2 <- trial123 %>%
   filter(MazeID==1) %>%
   group_by(FreqTempo, DirectionDistance, MazeID) %>%
   summarise(mazeTimeEffeciency = mean((72.65/MazeTime)*100, na.rm = TRUE),
-            mazePathESTD = sd((72.65/MazeTime)*100, na.rm = TRUE))
+            mazeTimeESTD = sd((72.65/MazeTime)*100, na.rm = TRUE))
 
-mazeTimeEffeciencyMAZE3 <- dfS %>%
+mazeTimeEffeciencyMAZE3 <- trial123 %>%
   filter(MazeID==2) %>%
   group_by(FreqTempo, DirectionDistance, MazeID) %>%
   summarise(mazeTimeEffeciency = mean((51.14/MazeTime)*100, na.rm = TRUE),
-            mazePathESTD = sd((51.14/MazeTime)*100, na.rm = TRUE))
+            mazeTimeESTD = sd((51.14/MazeTime)*100, na.rm = TRUE))
 
 mazeTimeEffeciencyMAZE1
 mazeTimeEffeciencyMAZE2
