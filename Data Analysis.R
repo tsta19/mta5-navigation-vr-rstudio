@@ -519,12 +519,17 @@ trial123 %<>%
   mutate(timeEfficiencySet)
 
 
-#------- Kruskal-Wallis test for Efficiencies
+#------- Shapiro + Kruskal-Wallis test for Efficiencies
+
+SPE <- shapiro.test(trial123$mazePathEfficiency)
+STE <- shapiro.test(trial123$mazeTimeEfficiency)
+SPE
+STE
 
 KWE <- kruskal.test(trial123$mazePathEfficiency ~ trial123$mazeTimeEfficiency)
 KWE
 
-DTTD <- dunnTest(dfS$TravelDistance, dfS$DirectionDistance, method = "bonferroni")
+DTTD <- dunnTest(trial123$mazePathEfficiency, trial123$mazeTimeEfficiency, method = "bonferroni")
 DTTD
 
 KWTT <- kruskal.test(TestTime ~ FreqTempo, data = dfS)
@@ -533,5 +538,108 @@ summary(KWTT)
 DTTT <- dunnTest(dfS$TestTime, dfS$FreqTempo, method = "bonferroni")
 DTTT
 
+
+#------- Time effeciency MAZEID------
+
+mazeTimeEffeciencyMAZE11 <- trial123 %>%
+  filter(MazeID==0) %>%
+  group_by(FreqTempo, DirectionDistance, MazeID) %>%
+  summarise(mazeTimeEffeciency = mean((24.20/MazeTime)*100, na.rm = TRUE),
+            mazeTimeESTD = sd((24.20/MazeTime)*100, na.rm = TRUE))
+
+mazeTimeSet11 <- trial123 %>%
+  filter(MazeID==0) %>%
+  summarise(mazeTimeEfficiency = (24.20/MazeTime)*100)
+
+
+
+mazeTimeEffeciencyMAZE22 <- trial123 %>%
+  filter(MazeID==1) %>%
+  group_by(FreqTempo, DirectionDistance, MazeID) %>%
+  summarise(mazeTimeEffeciency = mean((72.65/MazeTime)*100, na.rm = TRUE),
+            mazeTimeESTD = sd((72.65/MazeTime)*100, na.rm = TRUE))
+
+mazeTimeSet22 <- trial123 %>%
+  filter(MazeID==1) %>%
+  summarise(mazeTimeEfficiency = (72.65/MazeTime)*100)
+
+
+
+mazeTimeEffeciencyMAZE33 <- trial123 %>%
+  filter(MazeID==2) %>%
+  group_by(FreqTempo, DirectionDistance, MazeID) %>%
+  summarise(mazeTimeEffeciency = mean((51.14/MazeTime)*100, na.rm = TRUE),
+            mazeTimeESTD = sd((51.14/MazeTime)*100, na.rm = TRUE))
+
+mazeTimeSet33 <- trial123 %>%
+  filter(MazeID==2) %>%
+  summarise(mazeTimeEfficiency = (51.14/MazeTime)*100)
+
+
+mazeTimeEffeciencyMAZE11
+mazeTimeEffeciencyMAZE22
+mazeTimeEffeciencyMAZE33
+
+
+#------- Path effeciency MAZEID ------
+mazePathEffeciencyMAZE11 <- trial123 %>%
+  filter(MazeID==0) %>%
+  group_by(FreqTempo, DirectionDistance, MazeID) %>%
+  summarise(mazePathEffeciency = mean((75.10/TravelDistance)*100, na.rm = TRUE),
+            mazePathESTD = sd((75.10/TravelDistance)*100, na.rm = TRUE))
+
+mazePathSet11 <- trial123 %>%
+  filter(MazeID==0) %>%
+  summarise(mazePathEfficiency = (75.10/TravelDistance)*100)
+
+
+mazePathEffeciencyMAZE22 <- trial123 %>%
+  filter(MazeID==1) %>%
+  group_by(FreqTempo, DirectionDistance, MazeID) %>%
+  summarise(mazePathEffeciency = mean((213.38/TravelDistance)*100, na.rm = TRUE),
+            mazePathESTD = sd((213.38/TravelDistance)*100, na.rm = TRUE))
+
+mazePathSet22 <- trial123 %>%
+  filter(MazeID==1) %>%
+  summarise(mazePathEfficiency = (213.38/TravelDistance)*100)
+
+
+
+mazePathEffeciencyMAZE33 <- trial123 %>%
+  filter(MazeID==2) %>%
+  group_by(FreqTempo, DirectionDistance, MazeID) %>%
+  summarise(mazePathEffeciency = mean((149.48/TravelDistance)*100, na.rm = TRUE),
+            mazePathESTD = sd((149.48/TravelDistance)*100, na.rm = TRUE))
+
+mazePathSet33 <- trial123 %>%
+  filter(MazeID==2) %>%
+  summarise(mazePathEfficiency = (149.48/TravelDistance)*100)
+
+
+
+mazePathEffeciencyMAZE1
+mazePathEffeciencyMAZE2
+mazePathEffeciencyMAZE3
+
+
+
+#------- Shapiro + Kruskal-Wallis test for Efficiencies
+
+SPE <- shapiro.test(trial123$mazePathEfficiency)
+STE <- shapiro.test(trial123$mazeTimeEfficiency)
+SPE
+STE
+
+KWE <- kruskal.test(mazePathSet11 ~ mazePathSet22)
+KWE
+
+DTTD <- dunnTest(trial123$mazePathEfficiency, trial123$mazeTimeEfficiency, method = "bonferroni")
+DTTD
+
+KWTT <- kruskal.test(TestTime ~ FreqTempo, data = dfS)
+summary(KWTT)
+
+DTTT <- dunnTest(dfS$TestTime, dfS$FreqTempo, method = "bonferroni")
+DTTT
 
 
