@@ -622,6 +622,14 @@ mazePathEffeciencyMAZE2
 mazePathEffeciencyMAZE3
 
 
+trial123 %<>% 
+mutate(FreqDisPathE = ifelse(DirectionDistance == "Distance" & FreqTempo == "Frequency", mazePathEfficiency, NA),
+       FreqDirePathE = ifelse(DirectionDistance == "Direction" & FreqTempo == "Frequency", mazePathEfficiency, NA),
+       TempDisPathE = ifelse(DirectionDistance == "Distance" & FreqTempo == "Tempo", mazePathEfficiency, NA),
+       TempDirePathE = ifelse(DirectionDistance == "Direction" & FreqTempo == "Tempo", mazePathEfficiency, NA)) %>%
+  
+
+  
 
 #------- Shapiro + Kruskal-Wallis test for Efficiencies
 
@@ -641,5 +649,91 @@ summary(KWTT)
 
 DTTT <- dunnTest(dfS$TestTime, dfS$FreqTempo, method = "bonferroni")
 DTTT
+
+#dplyr::filter(df, !grepl("RTB",TrackingPixel))
+#testest <- filter()
+
+
+
+KWE <- kruskal.test(trial123$FreqTempo, trial123$mazeTimeEfficiency)
+KWE
+
+
+#--------- Device button click ------
+
+meanFPS <- mean((1/dfP$TimeSinceLastFrame))
+meanFPS
+
+dfS %<>% 
+  mutate(NewState1 = ifelse(DirectionDistance == "Distance" & DeviceButtonClickStart == "0", MazeTime, DeviceButtonClickStart/meanFPS)) %>%
+  unite("DeviceOnTime", NewState1, remove = TRUE, na.rm = TRUE) %>%
+  mutate(DeviceOnDistance = as.numeric(DeviceOnDistance))
+
+
+dfS %>%
+  ggplot(aes(x = MazeID, y = DeviceOnTime, color = DirectionDistance)) +
+  geom_boxplot() +
+  theme_classic() +
+  ylab("Seconds of Device ON") +
+  xlab("MazeID") +
+  theme(legend.position="bottom", 
+        axis.text.x = element_text(size = 14), 
+        axis.text.y = element_text(size = 14), 
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 14),
+        panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black")) +
+  scale_color_discrete("") +
+  scale_shape_discrete("")
+
+
+
+dfS %>%
+  ggplot(aes(x = MazeID, y = DeviceOnTime, color = DirectionDistance)) +
+  geom_boxplot() +
+  theme_classic() +
+  ylab("Seconds of Device ON") +
+  xlab("MazeID") +
+  theme(legend.position="bottom", 
+        axis.text.x = element_text(size = 14), 
+        axis.text.y = element_text(size = 14), 
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 14),
+        panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black")) +
+  scale_color_discrete("") +
+  scale_shape_discrete("")
+
+
+dfS %>%
+  ggplot(aes(x = MazeID, y = DeviceOnDistance, color = FreqTempo)) +
+  geom_boxplot() +
+  theme_classic() +
+  ylab("Seconds of Device ON") +
+  xlab("MazeID") +
+  theme(legend.position="bottom", 
+        axis.text.x = element_text(size = 14), 
+        axis.text.y = element_text(size = 14), 
+        axis.title = element_text(size = 14),
+        legend.title = element_text(size = 14),
+        legend.text = element_text(size = 14),
+        panel.border = element_blank(), 
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(), 
+        axis.line = element_line(colour = "black")) +
+  scale_color_discrete("") +
+  scale_shape_discrete("")
+
+
+
+# %>%
+  #filter(str_detect(trial123, 'Toyota|Mazda'))
+
 
 
