@@ -166,6 +166,9 @@ trial123 <- rbind(dfTrial1,dfTrial2,dfTrial3)
 GROUPINGgroups <- MergedDoubleBatch %>%
   unite("Gp", FreqTempo:DirectionDistance, remove=FALSE)
 
+GroupedTrial123 <- trial123 %>%
+  unite("BothThings", FreqTempo:DirectionDistance, remove=FALSE)
+
 ScatPlotMazes <- ggplot(data = GROUPINGgroups, aes(x=MTrialID, y=mazeTimeEffeciency, colour = FreqTempo, shape = DirectionDistance, size = 2, group = Gp))+
   geom_line(size = 1) +
   geom_point() 
@@ -736,4 +739,24 @@ dfS %>%
   #filter(str_detect(trial123, 'Toyota|Mazda'))
 
 
+#-----------------  LappeTing:
 
+GroupedTrial123 <- trial123 %>%
+  unite("BothThings", FreqTempo:DirectionDistance, remove=FALSE)
+
+groupedTest <- kruskal.test(mazePathEfficiency ~ BothThings, data = GroupedTrial123)
+groupedTest
+
+LaterTater <- dunnTest(GroupedTrial123$mazePathEfficiency, as.factor(GroupedTrial123$BothThings), method = "bonferroni")
+LaterTater
+
+groupedTestTime <- kruskal.test(mazeTimeEfficiency ~ BothThings, data = GroupedTrial123)
+groupedTestTime
+
+LaterTater <- dunnTest(GroupedTrial123$mazeTimeEfficiency, as.factor(GroupedTrial123$BothThings), method = "bonferroni")
+LaterTater
+
+GroupedTrial123 %>% ggplot(aes(x = BothThings, y = mazePathEfficiency, color = BothThings)) +
+  geom_boxplot()
+
+KWE <- kruskal.test(trial123$FreqTempo, trial123$mazeTimeEfficiency, "Frequency" ~ trial123$FreqTempo)
